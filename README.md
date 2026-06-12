@@ -93,6 +93,34 @@ reste qu'à choisir la visibilité et la taille du groupe.
   quand un créneau atteint le minimum, persistance localStorage.
 - `src/components/` — Feed, fiche activité, création, agenda, cercles.
 
+## 📱 Déployer sur mobile (PWA)
+
+SyncUp est une **Progressive Web App** : installable sur l'écran d'accueil iOS/Android, plein
+écran, avec icône et fonctionnement hors-ligne (service worker généré par `vite-plugin-pwa`).
+Pas besoin des stores pour tester le MVP.
+
+### Option A — GitHub Pages (automatique, gratuit)
+
+Un workflow (`.github/workflows/deploy.yml`) build et déploie à chaque push. **Une seule action
+manuelle** : dans le repo GitHub → **Settings → Pages → Source : GitHub Actions**. Au prochain
+push, l'app est en ligne sur `https://<utilisateur>.github.io/frood/`.
+Ouvre cette URL sur ton téléphone → menu du navigateur → **« Sur l'écran d'accueil »**.
+
+### Option B — Vercel (recommandé pour un domaine perso)
+
+1. [vercel.com](https://vercel.com) → **Add New → Project** → importe le repo `frood`.
+2. Framework détecté automatiquement (Vite), rien à configurer (`vercel.json` est fourni).
+3. Tu obtiens une URL `syncup.vercel.app` (ou ton domaine) ; chaque push redéploie.
+
+> Sur iPhone, l'installation PWA se fait **via Safari** uniquement (« Partager → Sur l'écran
+> d'accueil »).
+
+### Plus tard — App Store / Play Store
+
+[Capacitor](https://capacitorjs.com) enrobe cette web app (sans réécriture) en app native iOS/
+Android et débloque notifications push + accès aux contacts. Prévoir un compte Apple Developer
+(99 $/an) et Google Play (25 $ une fois).
+
 ## ⚠️ MVP / démo
 
 Tout est local et simulé : pas de backend, pas de vraies intégrations partenaires ni de
