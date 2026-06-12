@@ -328,6 +328,17 @@ body {
   border-radius: 99px;
 }
 
+.reg-compare {
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.reg-compare h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
 /* ---- Pesticides gauge ---- */
 .pesticide-gauge {
   display: grid;

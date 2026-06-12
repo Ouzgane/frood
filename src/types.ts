@@ -41,6 +41,8 @@ export interface Produce {
   glycemicIndex: number;
   pesticideRisk: PesticideRisk;
   pesticideDetail: string;
+  /** Principaux pays producteurs approvisionnant le marché français (clés de REGULATIONS). */
+  producers: string[];
   origins: Origin[];
   /** Empreinte eau moyenne (litres / kg). */
   waterLPerKg: number;

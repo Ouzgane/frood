@@ -22,7 +22,7 @@ export function CompareView() {
     <div className="view">
       <h2 className="view-title">⚖️ Comparateur d'origines</h2>
       <p className="note">
-        Ex. : fraise française vs fraise espagnole — même produit, deux provenances, deux impacts.
+        Ex. : tomate française vs tomate espagnole — même produit, deux provenances, deux impacts.
       </p>
       <div className="chips chips-wrap">
         {comparable.map((p) => (

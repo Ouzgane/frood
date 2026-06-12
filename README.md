@@ -40,7 +40,8 @@ Plus : conseils de conservation et idées recettes pour chaque produit.
 ## Stack & architecture
 
 - **Vite + React + TypeScript**, zéro dépendance runtime hors React, design mobile-first (max 480 px).
-- `src/data/produce.ts` — base locale de 22 fruits & légumes (nutrition, saisons, origines, pesticides, CO₂, eau, conservation, recettes).
+- `src/data/produce.ts` — base de démarrage : les 3 fruits et 4 légumes les plus achetés en France (pomme, banane, orange, tomate, carotte, courgette, pomme de terre), avec nutrition, saisons, origines, pesticides, CO₂, eau, conservation, recettes.
+- `src/data/regulations.ts` — restrictivité des normes pesticides par pays + comparateur réglementaire (produit français → comparé au meilleur pays producteur ; produit importé → comparé à la France et au meilleur pays).
 - `src/lib/score.ts` — moteur de notation et utilitaires de saison.
 - `src/components/` — les 5 vues + fiche produit.
 

@@ -11,6 +11,56 @@ import {
   seasonalAlternatives,
 } from "../lib/score";
 import { ScoreCircle } from "./ScoreBadge";
+import { compareRegulations } from "../data/regulations";
+
+function RegulationCompare({ producers, originCountry }: { producers: string[]; originCountry: string }) {
+  const cmp = compareRegulations(producers, originCountry);
+
+  // Pays affichés : origine, référence France, meilleur producteur — dédupliqués, du plus restrictif au moins.
+  const shown = [cmp.origin, { country: "France", reg: cmp.france }, cmp.best, cmp.bestOther]
+    .filter((c, i, arr) => arr.findIndex((x) => x.country === c.country) === i)
+    .sort((a, b) => b.reg.score - a.reg.score);
+
+  let verdict: { cls: string; text: string };
+  if (cmp.originIsFrench) {
+    verdict = cmp.franceIsBest
+      ? {
+          cls: "note-ok",
+          text: "✅ La France est la réglementation la plus restrictive parmi les principaux pays producteurs de ce produit.",
+        }
+      : {
+          cls: "note-warn",
+          text: `🥇 Encore mieux que la France : ${cmp.best.country}. ${cmp.best.reg.note}`,
+        };
+  } else {
+    const vsFrance =
+      cmp.origin.reg.score < cmp.france.score
+        ? `⚠️ La réglementation est plus restrictive en France qu'${cmp.origin.reg.loc}. ${cmp.origin.reg.note}`
+        : `La réglementation ${cmp.origin.reg.loc} est comparable à celle de la France.`;
+    const bestNote = cmp.franceIsBest
+      ? " Parmi les pays producteurs, la France est la plus restrictive."
+      : ` Le pays producteur le plus restrictif : ${cmp.best.country}.`;
+    verdict = { cls: "note-warn", text: vsFrance + bestNote };
+  }
+
+  return (
+    <div className="reg-compare">
+      <h4>🏛️ Restrictivité des normes par pays</h4>
+      {shown.map((c) => (
+        <div className="score-row" key={c.country}>
+          <span>
+            {c.country}
+            {c.country === cmp.origin.country ? " (origine)" : ""}
+          </span>
+          <Bar value={c.reg.score} max={100} color={c.reg.score >= 75 ? "var(--brand)" : "var(--score-poor)"} />
+          <span className="score-num">{c.reg.score}</span>
+        </div>
+      ))}
+      <p className={`note ${verdict.cls}`}>{verdict.text}</p>
+      <p className="note">Indice indicatif (0–100) basé sur les substances autorisées et les politiques nationales de réduction.</p>
+    </div>
+  );
+}
 
 function Bar({ value, max, color }: { value: number; max: number; color?: string }) {
   return (
@@ -132,7 +182,7 @@ export function ProductDetail({
           ))}
         </div>
         <p>{produce.pesticideDetail}</p>
-        {origin.normesNote && <p className="note note-warn">{origin.normesNote}</p>}
+        <RegulationCompare producers={produce.producers} originCountry={origin.country} />
       </section>
 
       <section className="card">
