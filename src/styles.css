@@ -1,0 +1,534 @@
+:root {
+  --brand: #1b7a43;
+  --brand-light: #e6f4ec;
+  --ink: #1d2b23;
+  --muted: #6b7a70;
+  --bg: #f6f8f6;
+  --card: #ffffff;
+  --line: #e3e9e4;
+  --score-excellent: #1b7a43;
+  --score-good: #7cb342;
+  --score-poor: #f59e0b;
+  --score-bad: #e0492f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: var(--brand);
+  color: #fff;
+  padding: 16px 20px 12px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.app-header p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.app-main {
+  flex: 1;
+  padding: 16px 16px 84px;
+}
+
+.view-title {
+  margin: 0 0 4px;
+  font-size: 19px;
+}
+
+.section-title {
+  margin: 20px 0 8px;
+  font-size: 16px;
+}
+
+/* ---- Search ---- */
+.search-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 16px;
+  background: var(--card);
+  margin-bottom: 12px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.product-emoji {
+  font-size: 28px;
+}
+
+.product-card-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-card-name {
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 12px;
+  align-self: flex-start;
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+
+.badge-ok {
+  background: var(--brand-light);
+  color: var(--brand);
+}
+
+.badge-mid {
+  background: #fdf3e0;
+  color: #b07407;
+}
+
+.badge-ko {
+  background: #fdeae6;
+  color: var(--score-bad);
+}
+
+.score-dot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+}
+
+.score-dot .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.score-dot-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* ---- Cards & facts ---- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin: 12px 0;
+}
+
+.card h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.muted {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.facts li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.facts li:last-child {
+  border-bottom: none;
+}
+
+.facts li span {
+  color: var(--muted);
+}
+
+.note {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 10px 0 0;
+}
+
+.note-ok {
+  color: var(--brand);
+}
+
+.note-warn {
+  color: #b07407;
+  background: #fdf3e0;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+/* ---- Chips ---- */
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 99px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.chip-active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+/* ---- Detail ---- */
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  overflow-y: auto;
+  z-index: 10;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 16px 32px;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 11;
+}
+
+.back-btn {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.detail-emoji {
+  font-size: 38px;
+}
+
+.detail-title {
+  flex: 1;
+}
+
+.detail-title h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.detail-category {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.score-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score-circle-label {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: -6px;
+}
+
+.score-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 48px;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  padding: 5px 0;
+}
+
+.score-num {
+  text-align: right;
+  color: var(--muted);
+}
+
+.bar {
+  height: 8px;
+  background: var(--line);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 99px;
+}
+
+/* ---- Pesticides gauge ---- */
+.pesticide-gauge {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.gauge-step {
+  text-align: center;
+  font-size: 11px;
+  padding: 6px 2px;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--muted);
+}
+
+/* ---- Season strip ---- */
+.month-strip {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 3px;
+  margin-bottom: 10px;
+}
+
+.month-cell {
+  text-align: center;
+  font-size: 11px;
+  padding: 6px 0;
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--muted);
+}
+
+.month-on {
+  background: var(--brand-light);
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.month-now {
+  outline: 2px solid var(--brand);
+}
+
+.recipes {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.recipes li {
+  padding: 4px 0;
+}
+
+/* ---- Scan ---- */
+.scan-view {
+  text-align: center;
+}
+
+.scan-frame {
+  font-size: 56px;
+  border: 2px dashed var(--line);
+  border-radius: 20px;
+  padding: 48px 0;
+  margin-bottom: 16px;
+  background: var(--card);
+}
+
+.scan-photo {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+
+.primary-btn {
+  display: inline-block;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 13px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ghost-btn {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 12px;
+  font-family: inherit;
+}
+
+.pulse {
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.scan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.scan-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 4px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.scan-cell span {
+  font-size: 24px;
+}
+
+/* ---- Compare ---- */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.compare-table th,
+.compare-table td {
+  text-align: left;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.compare-table td:first-child {
+  color: var(--muted);
+  width: 34%;
+}
+
+/* ---- Tab bar ---- */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 20;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 0 10px;
+  border: none;
+  background: none;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.tab-icon {
+  font-size: 20px;
+}
+
+.tab-active {
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.disclaimer {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 24px;
+}
