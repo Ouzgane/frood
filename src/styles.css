@@ -248,7 +248,7 @@ body {
   z-index: 10;
   max-width: 480px;
   margin: 0 auto;
-  padding: 0 16px 32px;
+  padding: 0 16px 96px;
 }
 
 .detail-header {

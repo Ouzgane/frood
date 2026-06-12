@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Produce } from "../types";
 import { PRODUCE } from "../data/produce";
-import { MONTH_NAMES, computeScore } from "../lib/score";
+import { MONTH_NAMES, MONTH_SHORT, computeScore } from "../lib/score";
 import { ProductCard } from "./ProductCard";
 
 export function CalendarView({ month, onSelect }: { month: number; onSelect: (p: Produce) => void }) {
@@ -24,7 +24,7 @@ export function CalendarView({ month, onSelect }: { month: number; onSelect: (p:
             className={`chip ${selected === i + 1 ? "chip-active" : ""}`}
             onClick={() => setSelected(i + 1)}
           >
-            {name.slice(0, 3)}
+            {MONTH_SHORT[i]}
             {i + 1 === month ? " •" : ""}
           </button>
         ))}

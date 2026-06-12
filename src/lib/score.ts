@@ -7,6 +7,11 @@ export const MONTH_NAMES = [
   "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
 ];
 
+export const MONTH_SHORT = [
+  "Jan", "Fév", "Mar", "Avr", "Mai", "Juin",
+  "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc",
+];
+
 export type SeasonStatus = "saison" | "limite" | "hors-saison" | "import";
 
 export function seasonStatus(p: Produce, month: number): SeasonStatus {
