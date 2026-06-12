@@ -1,7 +1,11 @@
-# 🍏 FruitScan — le Yuka des fruits & légumes
+# ⚡ SyncUp — tes plans, en moments partagés
 
-Scannez ou recherchez un fruit/légume pour obtenir une **note de 0 à 100** et des infos détaillées
-sur sa qualité nutritionnelle, sa saisonnalité, son origine et son impact environnemental.
+Une application sociale d'activités : **tu poses tes dispos et tes intentions, tes amis (ou des
+inconnus) se greffent — avec booking intégré**.
+
+> On rate des moments avec ses amis par manque de coordination, pas par manque d'envie.
+> « On devrait faire du paddle un jour » reste une intention morte. SyncUp la transforme en
+> invitation concrète.
 
 ## Lancer l'application
 
@@ -11,48 +15,60 @@ npm run dev      # développement (http://localhost:5173)
 npm run build    # build de production (dist/)
 ```
 
-## Fonctionnalités
+## Comment ça marche
 
-- **🔍 Recherche** — recherche manuelle, liste triée par note, badge de saisonnalité.
-- **📷 Scanner** — prise de photo (mode démo : la reconnaissance IA sera branchée sur une API de vision).
-- **📅 Calendrier de saison** — fruits & légumes de saison en France, mois par mois.
-- **⚖️ Comparateur** — même produit, deux origines (ex. fraise 🇫🇷 vs 🇪🇸) : distance, transport, CO₂, normes pesticides, score environnemental.
-- **🧺 Mode marché** — panier de saison recommandé, optimisé selon le mois courant.
+1. **Tu crées un "slot d'activité"** — 🎾 Paddle samedi 10h, 🖼️ expo Basquiat dimanche 14h,
+   🎵 concert vendredi 20h… — avec **plusieurs créneaux** de dispo si besoin.
+2. **Tu choisis qui peut voir et rejoindre** :
+   - 💛 **Cercle proche** — amis intimes seulement
+   - 🌐 **Cercle élargi** — tous tes abonnés (contacts, Instagram, liens d'invitation)
+   - 📣 **Public** — ouvert à la communauté, pour rencontrer des gens
+3. **Tes amis se greffent** — ils voient ton slot dans leur feed (« le journal de tes amis »),
+   choisissent un créneau et cliquent *Je viens*. Pas de chat infini, pas de SMS.
+4. **Le booking se fait tout seul** — dès qu'un créneau atteint le minimum de participants,
+   l'app réserve chez le partenaire et débite la part de chacun. Minimum non atteint =
+   personne ne paie (modèle type ClassPass / Stripe Connect).
 
-### Fiche produit en 4 blocs
+### Partenaires de booking (simulés dans ce MVP)
 
-1. **🌍 Origine & Trajet** — provenance, distance, transport, ~kg CO₂/kg, empreinte eau, score environnemental.
-2. **☠️ Pesticides** — niveau de risque (échelle type EWG), détail des résidus, comparaison des normes (ex. Espagne vs France).
-3. **📅 Saisonnalité** — frise des 12 mois, statut du mois courant, alternatives de saison suggérées.
-4. **💊 Fiche santé** — calories, glucides/sucres, fibres, protéines, indice glycémique, vitamines & minéraux.
-
-Plus : conseils de conservation et idées recettes pour chaque produit.
-
-## La note sur 100
-
-| Critère | Poids |
+| Catégorie | Partenaire |
 | --- | --- |
-| Apport nutritionnel (fibres, vitamines, minéraux, sucres) | 40 |
-| Teneur en pesticides (risque résidus) | 25 |
-| Saisonnalité (mois courant, France) | 20 |
-| Indice glycémique | 15 |
+| 🎾 Terrains de sport | Playtomic / CourtReserve |
+| 🧘 Cours collectifs | ClassPass |
+| 🖼️ Expos | Cur8 |
+| 🎵 Concerts & soirées | Shotgun / Fever |
+| 🍽️ Restos | TheFork |
+| 🎭 Événements culturels | Eventbrite |
+
+## Les 4 onglets
+
+- **🧭 Feed** — le journal chronologique des intentions de tes cercles, filtrable par cercle
+  et par catégorie. Chaque carte montre le créneau en tête, le prix, et la jauge « X/min pour réserver ».
+- **➕ Proposer** — titre, lieu, catégorie, plusieurs créneaux, visibilité, taille du groupe,
+  prix par personne ; le partenaire de booking est choisi automatiquement.
+- **🗓 Mes sorties** — tout ce que tu organises ou as rejoint.
+- **👥 Cercles** — gère qui est *proche* vs *élargi*, invite par lien (WhatsApp, iMessage…).
 
 ## Stack & architecture
 
-- **Vite + React + TypeScript**, zéro dépendance runtime hors React, design mobile-first (max 480 px).
-- `src/data/produce.ts` — base locale de 22 fruits & légumes (nutrition, saisons, origines, pesticides, CO₂, eau, conservation, recettes).
-- `src/lib/score.ts` — moteur de notation et utilitaires de saison.
-- `src/components/` — les 5 vues + fiche produit.
+- **Vite + React + TypeScript**, zéro dépendance runtime hors React, design mobile-first (max 480 px), thème sombre.
+- `src/types.ts` — modèle de données (activités, créneaux, cercles, catégories, partenaires).
+- `src/data/seed.ts` — données de démo (9 amis + 2 membres de la communauté, 8 activités).
+- `src/lib/store.ts` — visibilité par cercle, jauge de réservation, **booking automatique**
+  quand un créneau atteint le minimum, persistance localStorage.
+- `src/components/` — Feed, fiche activité, création, agenda, cercles.
 
-## ⚠️ Données
+## ⚠️ MVP / démo
 
-Les données embarquées sont **indicatives, à but de démonstration**. Sources à intégrer en production :
-Ciqual (ANSES) pour la nutrition, EFSA/DGCCRF et EWG pour les pesticides, ADEME Agribalyse pour le
-carbone, Water Footprint Network pour l'eau.
+Tout est local et simulé : pas de backend, pas de vraies intégrations partenaires ni de
+paiement. En production : Stripe Connect pour le paiement collectif (commission 2–5 %),
+intégrations partenaires une à une, login Instagram (pseudo + photo), import contacts,
+liens d'invitation universels.
 
 ## Pistes suivantes (roadmap)
 
-- Reconnaissance visuelle réelle (API de vision côté serveur).
-- Géolocalisation pour la saisonnalité et les distances par région.
-- Compte premium (freemium) : historique de scans, comparateur illimité, alertes saison.
-- Annuaire maraîchers / AMAP partenaires.
+- Backend temps réel (groupes, notifications de confirmation, places restantes).
+- Paiement collectif Stripe Connect : débit à la confirmation, remboursement auto si minimum non atteint.
+- Premières intégrations réelles : Playtomic (terrains) puis Shotgun (billets).
+- Connexion Instagram (identité) + import contacts pour retrouver ses amis.
+- Suggestions : « 3 amis sont libres dimanche matin, proposez un slot ? »
