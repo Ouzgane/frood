@@ -1,5 +1,5 @@
 import { Activity, Friend, ME } from "../types";
-import { leadingSlot, myslot } from "../lib/store";
+import { myslot, sortKey } from "../lib/store";
 import ActivityCard from "./ActivityCard";
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 export default function AgendaView({ activities, friends, onOpen }: Props) {
   const mine = activities
     .filter((a) => a.hostId === ME || myslot(a) !== undefined)
-    .sort((a, b) => leadingSlot(a).start.localeCompare(leadingSlot(b).start));
+    .sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
 
   const hosted = mine.filter((a) => a.hostId === ME);
   const joined = mine.filter((a) => a.hostId !== ME);

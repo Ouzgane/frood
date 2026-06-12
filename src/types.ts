@@ -21,11 +21,25 @@ export interface Slot {
   start: string;
   /** durée en minutes */
   duration: number;
+  /** qui a proposé ce créneau (activités à dispos larges) */
+  proposedBy?: string;
+  /** petit mot du proposeur : « chaud de faire 10 h – 11 h » */
+  message?: string;
 }
 
 export interface Participant {
   userId: string; // "me" ou id d'un ami
   slotId: string;
+  /** qui a avancé le prix de ce ticket (booker pour 2) */
+  paidBy?: string;
+}
+
+/** Dispos larges : période + horaires d'ouverture du lieu. */
+export interface AvailabilityWindow {
+  start: string;
+  end: string;
+  /** ex. « Fondation LV · ouvert 10 h – 19 h » */
+  openLabel: string;
 }
 
 export interface Activity {
@@ -37,12 +51,20 @@ export interface Activity {
   note?: string;
   visibility: Visibility;
   slots: Slot[];
+  /** dispos larges : les créneaux viennent des propositions des amis */
+  window?: AvailabilityWindow;
+  /** plan libre « qui veut venir vient » : pas de résa, pas de minimum */
+  casual?: boolean;
   minPeople: number;
   maxPeople: number;
   /** prix par personne en €, 0 = gratuit */
   price: number;
   /** partenaire de booking (ClassPass, Cur8, Shotgun, TheFork…) */
   partner?: string;
+  /** lien direct pour booker son ticket chez le partenaire */
+  ticketUrl?: string;
+  /** tickets restants chez le partenaire (rareté) */
+  ticketsLeft?: number;
   participants: Participant[];
   booking: BookingStatus;
   /** créneau retenu une fois la réservation déclenchée */

@@ -1,7 +1,7 @@
-import { Activity, CATEGORIES, Friend, ME, Slot } from "../types";
+import { Activity, AvailabilityWindow, CATEGORIES, Friend, ME, Slot } from "../types";
 import { ACTIVITIES, FRIENDS } from "../data/seed";
 
-const KEY = "syncup-state-v1";
+const KEY = "syncup-state-v2";
 
 export interface AppState {
   activities: Activity[];
@@ -42,14 +42,21 @@ export function myslot(a: Activity): string | undefined {
 }
 
 /** Le créneau le plus demandé (celui qui sera réservé). */
-export function leadingSlot(a: Activity): Slot {
+export function leadingSlot(a: Activity): Slot | undefined {
+  if (a.slots.length === 0) return undefined;
   return a.slots.reduce((best, s) =>
     slotParticipants(a, s.id).length > slotParticipants(a, best.id).length ? s : best,
   a.slots[0]);
 }
 
 export function leadingCount(a: Activity): number {
-  return slotParticipants(a, leadingSlot(a).id).length;
+  const slot = leadingSlot(a);
+  return slot ? slotParticipants(a, slot.id).length : 0;
+}
+
+/** Date de tri d'une activité dans le feed/agenda. */
+export function sortKey(a: Activity): string {
+  return leadingSlot(a)?.start ?? a.window?.start ?? "9999";
 }
 
 /** Une activité m'est visible selon son cercle (les miennes toujours). */
@@ -78,6 +85,12 @@ export function formatPrice(price: number): string {
   return price === 0 ? "Gratuit" : `${price} €`;
 }
 
+export function formatWindow(w: AvailabilityWindow): string {
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" });
+  return `${fmt(w.start)} → ${fmt(w.end)}`;
+}
+
 /* ---------- Actions ---------- */
 
 let idCounter = 0;
@@ -94,11 +107,61 @@ export function joinSlot(a: Activity, slotId: string): Activity {
   if (others.filter((p) => p.slotId === slotId).length >= a.maxPeople) return a;
   const participants = [...others, { userId: ME, slotId }];
   const next: Activity = { ...a, participants };
-  if (next.booking === "open" && participants.filter((p) => p.slotId === slotId).length >= a.minPeople) {
+  // Les plans libres (« qui veut venir vient ») ne déclenchent pas de résa.
+  if (!a.casual && next.booking === "open" && participants.filter((p) => p.slotId === slotId).length >= a.minPeople) {
     next.booking = "booked";
     next.bookedSlotId = slotId;
   }
   return next;
+}
+
+/**
+ * Dispos larges : je propose un horaire précis dans la fenêtre de l'hôte,
+ * et je m'y inscris dans la foulée.
+ */
+export function proposeSlot(
+  a: Activity,
+  draft: { start: string; duration: number; message?: string },
+): Activity {
+  const slot: Slot = {
+    id: uid(`${a.id}-prop`),
+    start: draft.start,
+    duration: draft.duration,
+    proposedBy: ME,
+    message: draft.message?.trim() || undefined,
+  };
+  return joinSlot({ ...a, slots: [...a.slots, slot] }, slot.id);
+}
+
+/**
+ * Booker pour 2 : je prends ma place ET celle d'un ami sur le même créneau
+ * (j'avance sa part, il me rembourse dans l'app). Utile quand il ne reste
+ * presque plus de tickets — personne ne book seul.
+ */
+export function bookForTwo(a: Activity, friendId: string, slotId: string): Activity {
+  const participants = [
+    ...a.participants.filter((p) => p.userId !== ME && p.userId !== friendId),
+    { userId: ME, slotId },
+    { userId: friendId, slotId, paidBy: ME },
+  ];
+  const next: Activity = {
+    ...a,
+    participants,
+    ticketsLeft: a.ticketsLeft !== undefined ? Math.max(0, a.ticketsLeft - 2) : undefined,
+  };
+  if (!a.casual && next.booking === "open" && participants.filter((p) => p.slotId === slotId).length >= a.minPeople) {
+    next.booking = "booked";
+    next.bookedSlotId = slotId;
+  }
+  return next;
+}
+
+/** Marque la part de `userId` comme remboursée à celui qui l'a avancée. */
+export function reimburse(a: Activity, userId: string): Activity {
+  return {
+    ...a,
+    participants: a.participants.map((p) => (p.userId === userId ? { ...p, paidBy: undefined } : p)),
+  };
 }
 
 export function leaveActivity(a: Activity): Activity {

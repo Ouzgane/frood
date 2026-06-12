@@ -49,6 +49,25 @@ activités apparaissent alors dans ton feed, et tu peux lui en proposer — c'es
 de SyncUp. Démo : rejoins le vélo public de Lucas → Lucas et Jade entrent dans ton cercle, et
 le « Run 10 km » de Lucas apparaît dans ton feed.
 
+### 📆 Dispos larges & propositions d'horaires
+
+Au lieu de créneaux précis, tu peux poser une **période** : « chaud pour l'expo Basquiat, dispo
+tout le weekend ». L'app affiche les **horaires d'ouverture du lieu**, et tes amis te proposent
+un horaire précis (« chaud de faire 10 h – 11 h ») sur lequel les autres se greffent — la
+réservation auto s'applique ensuite normalement.
+
+### 🎟 Lien ticket direct & booker pour 2
+
+Sur les activités à billets, un **lien direct** ouvre la billetterie du partenaire. Et quand il
+ne reste presque plus de tickets (« 🔥 plus que 2 »), le bouton **« 👯 Booker pour 2 »** permet
+d'avancer la part d'un ami pour réserver ensemble — il te **rembourse dans l'app** ensuite.
+Personne ne book seul.
+
+### 🙌 Plans libres — « qui veut venir vient »
+
+Pas tout passe par une résa : « je regarde PSG–OM au Café Oz demain soir ». Pas de minimum, pas
+de paiement — tes amis tapent juste **« J'y serai 🙌 »**.
+
 ### 📲 Exporter depuis une app partenaire
 
 Dans l'onglet *Proposer*, le bouton « Importer depuis ClassPass, Playtomic, Shotgun… » simule le
@@ -67,7 +86,7 @@ reste qu'à choisir la visibilité et la taille du groupe.
 
 ## Stack & architecture
 
-- **Vite + React + TypeScript**, zéro dépendance runtime hors React, design mobile-first (max 480 px), thème sombre.
+- **Vite + React + TypeScript**, zéro dépendance runtime hors React, design mobile-first (max 480 px), thème clair type Instagram.
 - `src/types.ts` — modèle de données (activités, créneaux, cercles, catégories, partenaires).
 - `src/data/seed.ts` — données de démo (9 amis + 2 membres de la communauté, 8 activités).
 - `src/lib/store.ts` — visibilité par cercle, jauge de réservation, **booking automatique**

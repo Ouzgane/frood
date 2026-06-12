@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Activity, CATEGORIES, Category, Friend } from "../types";
-import { isVisibleToMe, leadingSlot } from "../lib/store";
+import { isVisibleToMe, sortKey } from "../lib/store";
 import ActivityCard from "./ActivityCard";
 
 interface Props {
@@ -20,7 +20,7 @@ export default function FeedView({ activities, friends, onOpen }: Props) {
     .filter((a) => a.booking !== "cancelled")
     .filter((a) => cat === "toutes" || a.category === cat)
     .filter((a) => circle === "tous" || a.visibility === circle)
-    .sort((a, b) => leadingSlot(a).start.localeCompare(leadingSlot(b).start));
+    .sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
 
   return (
     <div className="view">

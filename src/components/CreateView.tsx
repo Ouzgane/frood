@@ -17,6 +17,18 @@ const todayISO = () => new Date().toISOString().slice(0, 10);
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+type Mode = "precis" | "larges" | "libre";
+
+/** Horaires d'ouverture suggérés selon la catégorie (mode dispos larges). */
+const OPEN_LABELS: Record<Category, string> = {
+  sport: "Terrains ouverts 8 h – 22 h",
+  culture: "Musée ouvert 10 h – 19 h",
+  concert: "Ouverture des portes 19 h",
+  resto: "Service 12 h – 14 h 30 / 19 h – 23 h",
+  soiree: "À partir de 19 h",
+  bienetre: "Cours de 7 h à 21 h",
+};
+
 /** Convertit un horaire partenaire [J+days, h, m] en brouillon de créneau. */
 const scheduleToDraft = ([days, h, m]: [number, number, number]): DraftSlot => {
   const d = new Date();
@@ -36,6 +48,10 @@ export default function CreateView({ onCreate }: Props) {
   const [slots, setSlots] = useState<DraftSlot[]>([{ date: todayISO(), time: "18:00" }]);
   const [showImport, setShowImport] = useState(false);
   const [importedFrom, setImportedFrom] = useState<string | null>(null);
+  const [mode, setMode] = useState<Mode>("precis");
+  const [windowStart, setWindowStart] = useState(todayISO());
+  const [windowEnd, setWindowEnd] = useState(todayISO());
+  const [openLabel, setOpenLabel] = useState("");
 
   const setSlot = (i: number, patch: Partial<DraftSlot>) =>
     setSlots(slots.map((s, j) => (j === i ? { ...s, ...patch } : s)));
@@ -51,12 +67,27 @@ export default function CreateView({ onCreate }: Props) {
   };
 
   const partner = importedFrom ?? CATEGORIES[category].partner;
+  const casual = mode === "libre";
 
-  const valid = title.trim() && venue.trim() && slots.every((s) => s.date && s.time) && minPeople <= maxPeople;
+  const valid =
+    title.trim() &&
+    venue.trim() &&
+    (mode === "larges"
+      ? windowStart && windowEnd && windowStart <= windowEnd
+      : slots.every((s) => s.date && s.time)) &&
+    minPeople <= maxPeople;
 
   const submit = () => {
     if (!valid) return;
     const id = uid("act");
+    const fixedSlots =
+      mode === "larges"
+        ? []
+        : slots.map((s, i) => ({
+            id: `${id}-s${i}`,
+            start: new Date(`${s.date}T${s.time}`).toISOString(),
+            duration: 90,
+          }));
     onCreate({
       id,
       hostId: ME,
@@ -65,16 +96,21 @@ export default function CreateView({ onCreate }: Props) {
       venue: venue.trim(),
       note: note.trim() || undefined,
       visibility,
-      slots: slots.map((s, i) => ({
-        id: `${id}-s${i}`,
-        start: new Date(`${s.date}T${s.time}`).toISOString(),
-        duration: 90,
-      })),
-      minPeople,
-      maxPeople,
-      price,
-      partner,
-      participants: [{ userId: ME, slotId: `${id}-s0` }],
+      slots: fixedSlots,
+      window:
+        mode === "larges"
+          ? {
+              start: new Date(`${windowStart}T08:00`).toISOString(),
+              end: new Date(`${windowEnd}T23:00`).toISOString(),
+              openLabel: openLabel.trim() || OPEN_LABELS[category],
+            }
+          : undefined,
+      casual: casual || undefined,
+      minPeople: casual ? 1 : minPeople,
+      maxPeople: casual ? 30 : maxPeople,
+      price: casual ? 0 : price,
+      partner: casual ? undefined : partner,
+      participants: fixedSlots.length > 0 ? [{ userId: ME, slotId: `${id}-s0` }] : [],
       booking: "open",
     });
   };
@@ -121,20 +157,67 @@ export default function CreateView({ onCreate }: Props) {
       </label>
 
       <h2 className="section-title">Tes disponibilités</h2>
-      {slots.map((s, i) => (
-        <div key={i} className="slot-edit">
-          <input type="date" value={s.date} min={todayISO()} onChange={(e) => setSlot(i, { date: e.target.value })} />
-          <input type="time" value={s.time} onChange={(e) => setSlot(i, { time: e.target.value })} />
-          {slots.length > 1 && (
-            <button className="btn btn--ghost" onClick={() => setSlots(slots.filter((_, j) => j !== i))}>
-              ✕
+      <div className="chips-row">
+        {(
+          [
+            ["precis", "⏰ Créneaux précis"],
+            ["larges", "📆 Dispos larges"],
+            ["libre", "🙌 Plan libre"],
+          ] as [Mode, string][]
+        ).map(([m, label]) => (
+          <button key={m} className={`chip chip--btn ${mode === m ? "chip--on" : ""}`} onClick={() => setMode(m)}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {mode === "larges" ? (
+        <>
+          <p className="muted hint">
+            Tu es dispo sur toute une période (« tout le weekend ») : tes amis te proposeront des horaires
+            précis, dans les horaires d'ouverture du lieu.
+          </p>
+          <div className="slot-edit">
+            <input type="date" value={windowStart} min={todayISO()} onChange={(e) => setWindowStart(e.target.value)} />
+            <input type="date" value={windowEnd} min={windowStart} onChange={(e) => setWindowEnd(e.target.value)} />
+          </div>
+          <label className="field">
+            <span>Horaires d'ouverture du lieu</span>
+            <input
+              value={openLabel}
+              onChange={(e) => setOpenLabel(e.target.value)}
+              placeholder={OPEN_LABELS[category]}
+            />
+          </label>
+        </>
+      ) : (
+        <>
+          {mode === "libre" && (
+            <p className="muted hint">
+              « Je regarde le match au Café Oz demain soir » — pas de résa, pas de minimum : qui veut venir
+              vient.
+            </p>
+          )}
+          {slots.map((s, i) => (
+            <div key={i} className="slot-edit">
+              <input type="date" value={s.date} min={todayISO()} onChange={(e) => setSlot(i, { date: e.target.value })} />
+              <input type="time" value={s.time} onChange={(e) => setSlot(i, { time: e.target.value })} />
+              {slots.length > 1 && (
+                <button className="btn btn--ghost" onClick={() => setSlots(slots.filter((_, j) => j !== i))}>
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+          {mode === "precis" && (
+            <button
+              className="btn btn--ghost btn--block"
+              onClick={() => setSlots([...slots, { date: todayISO(), time: "18:00" }])}
+            >
+              ➕ Ajouter un créneau
             </button>
           )}
-        </div>
-      ))}
-      <button className="btn btn--ghost btn--block" onClick={() => setSlots([...slots, { date: todayISO(), time: "18:00" }])}>
-        ➕ Ajouter un créneau
-      </button>
+        </>
+      )}
 
       <h2 className="section-title">Qui peut voir ?</h2>
       <div className="vis-options">
@@ -148,6 +231,8 @@ export default function CreateView({ onCreate }: Props) {
         ))}
       </div>
 
+      {!casual && (
+        <>
       <h2 className="section-title">Groupe & paiement</h2>
       <div className="grid-3">
         <label className="field">
@@ -164,9 +249,12 @@ export default function CreateView({ onCreate }: Props) {
         </label>
       </div>
       <p className="muted hint">
-        ⚡ Réservation auto via <b>{partner}</b> dès {minPeople} participants sur un créneau.
+        ⚡ Réservation auto via <b>{partner}</b> dès {minPeople} participants sur un{" "}
+        {mode === "larges" ? "horaire proposé" : "créneau"}.
         {price > 0 && ` Chacun est débité de ${price} € uniquement à la confirmation.`}
       </p>
+        </>
+      )}
 
       <button className="btn btn--block btn--big" disabled={!valid} onClick={submit}>
         Publier l'activité 🚀

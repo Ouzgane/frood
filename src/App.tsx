@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
 import { Activity } from "./types";
-import { AppState, formatSlot, joinSlot, leaveActivity, loadState, mergeCircles, partnerOf, resetState, saveState } from "./lib/store";
+import {
+  AppState,
+  bookForTwo,
+  formatSlot,
+  joinSlot,
+  leaveActivity,
+  loadState,
+  mergeCircles,
+  partnerOf,
+  proposeSlot,
+  reimburse,
+  resetState,
+  saveState,
+} from "./lib/store";
+import { friendName } from "./components/Avatar";
 import FeedView from "./components/FeedView";
 import ActivityDetail from "./components/ActivityDetail";
 import CreateView from "./components/CreateView";
@@ -34,9 +48,8 @@ export default function App() {
   const updateActivity = (next: Activity) =>
     setState((s) => ({ ...s, activities: s.activities.map((a) => (a.id === next.id ? next : a)) }));
 
-  const handleJoin = (slotId: string) => {
-    if (!open) return;
-    const next = joinSlot(open, slotId);
+  /** Applique une mise à jour d'activité + mixité des cercles + toasts. */
+  const applyUpdate = (prev: Activity, next: Activity, extra: string[] = []) => {
     const merged = mergeCircles(next, state.friends);
     setState((s) => ({
       ...s,
@@ -45,8 +58,8 @@ export default function App() {
     }));
 
     const messages: string[] = [];
-    if (open.booking === "open" && next.booking === "booked") {
-      const slot = next.slots.find((s) => s.id === slotId)!;
+    if (prev.booking === "open" && next.booking === "booked" && next.bookedSlotId) {
+      const slot = next.slots.find((s) => s.id === next.bookedSlotId)!;
       const partner = partnerOf(next);
       messages.push(
         partner
@@ -54,6 +67,7 @@ export default function App() {
           : `🎉 ${next.minPeople} participants atteints ! Groupe confirmé — ${formatSlot(slot.start)}`,
       );
     }
+    messages.push(...extra);
     if (merged.newNames.length > 0) {
       const names =
         merged.newNames.length === 1
@@ -62,6 +76,39 @@ export default function App() {
       messages.push(`🤝 ${names} ton cercle élargi — vous pouvez maintenant vous proposer des plans !`);
     }
     if (messages.length > 0) showToast(messages.join(" "));
+  };
+
+  const handleJoin = (slotId: string) => {
+    if (!open) return;
+    const extra = open.casual
+      ? [`🙌 C'est noté — ${friendName(open.hostId, state.friends)} sait que tu passes !`]
+      : [];
+    applyUpdate(open, joinSlot(open, slotId), extra);
+  };
+
+  const handlePropose = (draft: { start: string; duration: number; message?: string }) => {
+    if (!open) return;
+    applyUpdate(open, proposeSlot(open, draft), [
+      "💬 Horaire proposé ! Tes cercles peuvent maintenant se greffer dessus.",
+    ]);
+  };
+
+  const handleBookForTwo = (friendId: string, slotId: string) => {
+    if (!open) return;
+    const partner = partnerOf(open);
+    applyUpdate(open, bookForTwo(open, friendId, slotId), [
+      `🎟 2 tickets bookés${partner ? ` via ${partner}` : ""} — ${friendName(friendId, state.friends)} te doit ${open.price} €.`,
+    ]);
+  };
+
+  const handleReimburse = (userId: string) => {
+    if (!open) return;
+    updateActivity(reimburse(open, userId));
+    showToast(
+      userId === "me"
+        ? "✅ Remboursé via SyncUp Pay !"
+        : `✅ Remboursement de ${friendName(userId, state.friends)} bien reçu.`,
+    );
   };
 
   const handleCreate = (a: Activity) => {
@@ -91,6 +138,9 @@ export default function App() {
             activity={open}
             friends={state.friends}
             onJoin={handleJoin}
+            onPropose={handlePropose}
+            onBookForTwo={handleBookForTwo}
+            onReimburse={handleReimburse}
             onLeave={() => updateActivity(leaveActivity(open))}
             onBack={() => setOpenId(null)}
           />

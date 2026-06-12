@@ -1,15 +1,17 @@
 :root {
-  --bg: #0e0d14;
-  --surface: #1a1825;
-  --surface-2: #242133;
-  --border: #322e45;
-  --text: #f2f0fa;
-  --muted: #9b95b3;
-  --accent: #8b5cf6;
-  --accent-2: #ec4899;
-  --ok: #34d399;
-  --grad: linear-gradient(135deg, #8b5cf6, #ec4899);
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --surface-2: #f1f3f5;
+  --border: #dbdbdb;
+  --text: #262626;
+  --muted: #8e8e8e;
+  --accent: #0095f6;
+  --accent-2: #ee2a7b;
+  --ok: #1f9d55;
+  --grad: linear-gradient(135deg, #0095f6, #2bb0ff);
+  --grad-logo: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7);
   --radius: 16px;
+  color-scheme: light;
 }
 
 * {
@@ -55,7 +57,7 @@ input {
   align-items: baseline;
   gap: 10px;
   padding: 14px 16px 10px;
-  background: rgba(14, 13, 20, 0.92);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
 }
@@ -63,7 +65,7 @@ input {
 .logo {
   font-size: 20px;
   font-weight: 800;
-  background: var(--grad);
+  background: var(--grad-logo);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -150,8 +152,16 @@ input {
 }
 
 .chip--on {
-  background: var(--grad);
+  background: var(--accent);
   border-color: transparent;
+  color: #fff;
+  font-weight: 700;
+}
+
+.chip--hot {
+  background: #fff1f0;
+  border-color: #ffc4bd;
+  color: #d63a2f;
   font-weight: 700;
 }
 
@@ -168,6 +178,7 @@ input {
   margin-bottom: 12px;
   cursor: pointer;
   transition: transform 0.1s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .card:active {
@@ -175,7 +186,7 @@ input {
 }
 
 .card--booked {
-  border-color: rgba(52, 211, 153, 0.45);
+  border-color: rgba(31, 157, 85, 0.45);
 }
 
 .card__head {
@@ -319,8 +330,8 @@ input {
 }
 
 .banner--booked {
-  border-color: rgba(52, 211, 153, 0.5);
-  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(31, 157, 85, 0.5);
+  background: rgba(31, 157, 85, 0.07);
 }
 
 .banner--booked strong {
@@ -344,7 +355,7 @@ input {
 }
 
 .slot--booked {
-  border-color: rgba(52, 211, 153, 0.5);
+  border-color: rgba(31, 157, 85, 0.5);
 }
 
 .slot__info {
@@ -373,9 +384,103 @@ input {
   background: var(--ok);
 }
 
+.slot__proposer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text);
+  font-style: italic;
+}
+
+.slot__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.slot__actions .btn {
+  font-size: 13px;
+  padding: 9px 12px;
+  white-space: nowrap;
+}
+
+/* ---------- Booker pour 2 ---------- */
+.picker {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 13px 14px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.picker__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.debt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* ---------- Proposer un horaire ---------- */
+.propose {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 13px 14px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.propose__msg {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.propose__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.ticket-link {
+  text-align: center;
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.empty--inline {
+  padding: 14px;
+  font-size: 13.5px;
+}
+
 /* ---------- Boutons ---------- */
 .btn {
-  background: var(--grad);
+  background: var(--accent);
   color: #fff;
   font-weight: 700;
   font-size: 14px;
@@ -466,12 +571,12 @@ input {
 
 .slot-edit input {
   flex: 1;
+  min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 10px;
   color: var(--text);
-  color-scheme: dark;
 }
 
 .vis-options {
@@ -493,7 +598,7 @@ input {
 
 .vis--on {
   border-color: var(--accent);
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(0, 149, 246, 0.07);
 }
 
 /* ---------- Import partenaire ---------- */
@@ -662,13 +767,13 @@ input {
   bottom: calc(96px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   width: min(440px, calc(100% - 32px));
-  background: var(--surface-2);
+  background: #fff;
   border: 1px solid var(--accent);
   border-radius: 14px;
   padding: 13px 16px;
   font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
   z-index: 30;
   animation: toast-in 0.25s ease;
 }
@@ -692,7 +797,7 @@ input {
   transform: translateX(-50%);
   width: min(480px, 100%);
   display: flex;
-  background: rgba(20, 18, 30, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--border);
   padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
