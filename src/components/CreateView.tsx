@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Activity, CATEGORIES, Category, ME, VISIBILITIES, Visibility } from "../types";
 import { uid } from "../lib/store";
+import { PartnerOffer } from "../data/partnerOffers";
+import PartnerImport from "./PartnerImport";
 
 interface Props {
   onCreate: (a: Activity) => void;
@@ -13,6 +15,15 @@ interface DraftSlot {
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** Convertit un horaire partenaire [J+days, h, m] en brouillon de créneau. */
+const scheduleToDraft = ([days, h, m]: [number, number, number]): DraftSlot => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return { date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, time: `${pad(h)}:${pad(m)}` };
+};
+
 export default function CreateView({ onCreate }: Props) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<Category>("sport");
@@ -23,9 +34,23 @@ export default function CreateView({ onCreate }: Props) {
   const [minPeople, setMinPeople] = useState(2);
   const [maxPeople, setMaxPeople] = useState(6);
   const [slots, setSlots] = useState<DraftSlot[]>([{ date: todayISO(), time: "18:00" }]);
+  const [showImport, setShowImport] = useState(false);
+  const [importedFrom, setImportedFrom] = useState<string | null>(null);
 
   const setSlot = (i: number, patch: Partial<DraftSlot>) =>
     setSlots(slots.map((s, j) => (j === i ? { ...s, ...patch } : s)));
+
+  const applyOffer = (o: PartnerOffer) => {
+    setTitle(o.title);
+    setCategory(o.category);
+    setVenue(o.venue);
+    setPrice(o.price);
+    setSlots(o.schedule.map(scheduleToDraft));
+    setImportedFrom(o.partner);
+    setShowImport(false);
+  };
+
+  const partner = importedFrom ?? CATEGORIES[category].partner;
 
   const valid = title.trim() && venue.trim() && slots.every((s) => s.date && s.time) && minPeople <= maxPeople;
 
@@ -48,7 +73,7 @@ export default function CreateView({ onCreate }: Props) {
       minPeople,
       maxPeople,
       price,
-      partner: CATEGORIES[category].partner,
+      partner,
       participants: [{ userId: ME, slotId: `${id}-s0` }],
       booking: "open",
     });
@@ -60,6 +85,17 @@ export default function CreateView({ onCreate }: Props) {
         <h1>Proposer une activité</h1>
         <p className="muted">Pose tes dispos, tes amis se greffent, l'app book.</p>
       </header>
+
+      {importedFrom ? (
+        <div className="banner banner--booked">
+          <strong>📲 Importé depuis {importedFrom} ✓</strong>
+          <span>Titre, lieu, horaires et prix récupérés — choisis la visibilité et la taille du groupe.</span>
+        </div>
+      ) : (
+        <button className="btn btn--ghost btn--block" onClick={() => setShowImport(true)}>
+          📲 Importer depuis ClassPass, Playtomic, Shotgun…
+        </button>
+      )}
 
       <label className="field">
         <span>Quoi ?</span>
@@ -128,13 +164,15 @@ export default function CreateView({ onCreate }: Props) {
         </label>
       </div>
       <p className="muted hint">
-        ⚡ Réservation auto via <b>{CATEGORIES[category].partner}</b> dès {minPeople} participants sur un créneau.
+        ⚡ Réservation auto via <b>{partner}</b> dès {minPeople} participants sur un créneau.
         {price > 0 && ` Chacun est débité de ${price} € uniquement à la confirmation.`}
       </p>
 
       <button className="btn btn--block btn--big" disabled={!valid} onClick={submit}>
         Publier l'activité 🚀
       </button>
+
+      {showImport && <PartnerImport onExport={applyOffer} onClose={() => setShowImport(false)} />}
     </div>
   );
 }

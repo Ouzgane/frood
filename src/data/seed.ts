@@ -18,9 +18,11 @@ export const FRIENDS: Friend[] = [
   { id: "alice", name: "Alice", avatar: "🐰", circle: "elargi", source: "instagram" },
   { id: "tom", name: "Tom", avatar: "🦅", circle: "elargi", source: "lien" },
   { id: "emma", name: "Emma", avatar: "🦄", circle: "elargi", source: "lien" },
-  // Membres de la communauté (visibles uniquement sur les slots publics)
+  // Hors de tes cercles : communauté ou amis d'amis. Ils intègrent ton
+  // cercle élargi quand vous faites une activité confirmée ensemble.
   { id: "lucas", name: "Lucas", avatar: "🚴", circle: "aucun", source: "lien" },
   { id: "jade", name: "Jade", avatar: "🐢", circle: "aucun", source: "lien" },
+  { id: "chloe", name: "Chloé", avatar: "🦜", circle: "aucun", source: "lien" },
 ];
 
 export const ACTIVITIES: Activity[] = [
@@ -30,7 +32,7 @@ export const ACTIVITIES: Activity[] = [
     title: "Paddle entre potes",
     category: "sport",
     venue: "Casa Padel · Paris 11e",
-    note: "Niveau débutant/intermédiaire, raquettes fournies. On book le terrain dès qu'on est 4 !",
+    note: "Niveau débutant/intermédiaire, raquettes fournies. On book le terrain dès qu'on est 4 ! Chloé (une amie à moi) est de la partie.",
     visibility: "proches",
     slots: [
       { id: "paddle-1", start: at(2, 10), duration: 90 },
@@ -43,7 +45,7 @@ export const ACTIVITIES: Activity[] = [
     participants: [
       { userId: "lea", slotId: "paddle-1" },
       { userId: "marco", slotId: "paddle-1" },
-      { userId: "sofia", slotId: "paddle-1" },
+      { userId: "chloe", slotId: "paddle-1" },
       { userId: "hugo", slotId: "paddle-2" },
     ],
     booking: "open",
@@ -120,16 +122,33 @@ export const ACTIVITIES: Activity[] = [
     title: "Vélo au bois de Vincennes",
     category: "sport",
     venue: "Départ Porte Dorée",
-    note: "Sortie tranquille ~25 km, ouvert à tous. 2 places dispo !",
+    note: "Sortie tranquille ~25 km, ouvert à tous. On part dès qu'on est 3 — 2 places dispo !",
     visibility: "public",
     slots: [{ id: "velo-1", start: at(4, 9, 30), duration: 120 }],
-    minPeople: 2,
+    minPeople: 3,
     maxPeople: 4,
     price: 0,
     participants: [
       { userId: "lucas", slotId: "velo-1" },
       { userId: "jade", slotId: "velo-1" },
     ],
+    booking: "open",
+  },
+  {
+    // Invisible tant que Lucas n'est pas dans tes cercles : apparaît dans le
+    // feed après une première activité confirmée avec lui (mixité des cercles).
+    id: "run",
+    hostId: "lucas",
+    title: "Run 10 km au bois",
+    category: "sport",
+    venue: "Bois de Vincennes",
+    note: "Allure cool 6 min/km, on papote en courant.",
+    visibility: "elargi",
+    slots: [{ id: "run-1", start: at(8, 9), duration: 70 }],
+    minPeople: 2,
+    maxPeople: 6,
+    price: 0,
+    participants: [{ userId: "lucas", slotId: "run-1" }],
     booking: "open",
   },
   {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Activity } from "./types";
-import { AppState, formatSlot, joinSlot, leaveActivity, loadState, partnerOf, resetState, saveState } from "./lib/store";
+import { AppState, formatSlot, joinSlot, leaveActivity, loadState, mergeCircles, partnerOf, resetState, saveState } from "./lib/store";
 import FeedView from "./components/FeedView";
 import ActivityDetail from "./components/ActivityDetail";
 import CreateView from "./components/CreateView";
@@ -37,16 +37,31 @@ export default function App() {
   const handleJoin = (slotId: string) => {
     if (!open) return;
     const next = joinSlot(open, slotId);
-    updateActivity(next);
+    const merged = mergeCircles(next, state.friends);
+    setState((s) => ({
+      ...s,
+      activities: s.activities.map((a) => (a.id === next.id ? next : a)),
+      friends: merged.friends,
+    }));
+
+    const messages: string[] = [];
     if (open.booking === "open" && next.booking === "booked") {
       const slot = next.slots.find((s) => s.id === slotId)!;
       const partner = partnerOf(next);
-      showToast(
+      messages.push(
         partner
           ? `🎉 ${next.minPeople} participants atteints ! Réservé via ${partner} — ${formatSlot(slot.start)}`
           : `🎉 ${next.minPeople} participants atteints ! Groupe confirmé — ${formatSlot(slot.start)}`,
       );
     }
+    if (merged.newNames.length > 0) {
+      const names =
+        merged.newNames.length === 1
+          ? `${merged.newNames[0]} a rejoint`
+          : `${merged.newNames.join(" et ")} ont rejoint`;
+      messages.push(`🤝 ${names} ton cercle élargi — vous pouvez maintenant vous proposer des plans !`);
+    }
+    if (messages.length > 0) showToast(messages.join(" "));
   };
 
   const handleCreate = (a: Activity) => {

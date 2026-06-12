@@ -11,6 +11,7 @@ const SOURCE_LABEL: Record<FriendSource, string> = {
   contacts: "📱 Contacts",
   instagram: "📸 Instagram",
   lien: "🔗 Lien d'invitation",
+  rencontre: "🤝 Rencontré via une activité",
 };
 
 export default function CirclesView({ friends, onToggleCircle, onReset }: Props) {

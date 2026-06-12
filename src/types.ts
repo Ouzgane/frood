@@ -4,7 +4,7 @@ export type Category = "sport" | "culture" | "concert" | "resto" | "soiree" | "b
 
 export type BookingStatus = "open" | "booked" | "cancelled";
 
-export type FriendSource = "contacts" | "instagram" | "lien";
+export type FriendSource = "contacts" | "instagram" | "lien" | "rencontre";
 
 export interface Friend {
   id: string;

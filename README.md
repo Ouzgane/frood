@@ -40,6 +40,22 @@ npm run build    # build de production (dist/)
 | 🍽️ Restos | TheFork |
 | 🎭 Événements culturels | Eventbrite |
 
+### 🤝 Les cercles se mélangent
+
+Quand tu fais une activité **confirmée** avec quelqu'un qui vient du cercle d'un autre (un ami
+d'ami, ou un membre de la communauté rencontré sur un slot public), cette personne **intègre
+automatiquement ton cercle élargi** (source « 🤝 Rencontré via une activité »). Ses prochaines
+activités apparaissent alors dans ton feed, et tu peux lui en proposer — c'est l'effet réseau
+de SyncUp. Démo : rejoins le vélo public de Lucas → Lucas et Jade entrent dans ton cercle, et
+le « Run 10 km » de Lucas apparaît dans ton feed.
+
+### 📲 Exporter depuis une app partenaire
+
+Dans l'onglet *Proposer*, le bouton « Importer depuis ClassPass, Playtomic, Shotgun… » simule le
+bouton **« Exporter vers SyncUp »** qu'on trouverait côté partenaire : tu repères un cours, un
+terrain ou un billet dans leur app, et SyncUp récupère titre, lieu, horaires et prix — il ne te
+reste qu'à choisir la visibilité et la taille du groupe.
+
 ## Les 4 onglets
 
 - **🧭 Feed** — le journal chronologique des intentions de tes cercles, filtrable par cercle

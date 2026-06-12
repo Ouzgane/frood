@@ -104,3 +104,26 @@ export function joinSlot(a: Activity, slotId: string): Activity {
 export function leaveActivity(a: Activity): Activity {
   return { ...a, participants: a.participants.filter((p) => p.userId !== ME) };
 }
+
+/**
+ * Mixité des cercles : quand je participe à une activité confirmée, les
+ * participants du créneau retenu qui ne sont dans aucun de mes cercles
+ * intègrent mon cercle élargi (source "rencontre").
+ */
+export function mergeCircles(
+  a: Activity,
+  friends: Friend[],
+): { friends: Friend[]; newNames: string[] } {
+  if (a.booking !== "booked" || !a.bookedSlotId) return { friends, newNames: [] };
+  const ids = slotParticipants(a, a.bookedSlotId);
+  if (!ids.includes(ME)) return { friends, newNames: [] };
+  const newNames: string[] = [];
+  const next = friends.map((f) => {
+    if (f.circle === "aucun" && ids.includes(f.id)) {
+      newNames.push(f.name);
+      return { ...f, circle: "elargi" as const, source: "rencontre" as const };
+    }
+    return f;
+  });
+  return { friends: next, newNames };
+}
